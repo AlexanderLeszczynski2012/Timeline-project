@@ -1,0 +1,541 @@
+/* ═══════════════════════════════════════════════════════
+   GOOGLE FONTS
+   IM Fell English — old-style serif used for body text,
+     descriptions, tags, and buttons. Gives an aged ink feel.
+   UnifrakturMaguntia — blackletter/gothic font used for
+     the main title and year numbers on each card.
+════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&display=swap');
+
+/* ── Reset ──────────────────────────────────────────────
+   Removes default browser margin/padding and makes all
+   elements use border-box sizing (padding doesn't add
+   to the element's total width/height).
+─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Body ───────────────────────────────────────────────
+   Dark walnut brown background with a faint grid overlay
+   made from two repeating linear gradients — mimics the
+   look of aged ruled paper or a ledger book.
+─────────────────────────────────────────────────────── */
+body {
+  font-family: 'IM Fell English', Georgia, serif;
+  background-color: #2b1f0e;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 34px, rgba(0,0,0,0.04) 35px),
+    repeating-linear-gradient(90deg, transparent, transparent 34px, rgba(0,0,0,0.03) 35px);
+  color: #2c1a00;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────
+   Sticky parchment banner fixed to the top of the screen.
+   The SVG data URI background adds a subtle paper noise
+   texture. The double border-bottom mimics a manuscript
+   ruling line. Box shadow gives depth against the page.
+─────────────────────────────────────────────────────── */
+header {
+  text-align: center;
+  padding: clamp(0.8rem, 2vw, 2rem) clamp(0.8rem, 3vw, 1.5rem) clamp(0.7rem, 1.5vw, 1.4rem);
+  background: #e8d9b0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  border-bottom: 4px double #7a5c2e;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  will-change: transform, opacity;
+}
+
+/* Decorative ornament lines above and below the title.
+   ::before appears above h1, ::after appears below the controls. */
+header::before,
+header::after {
+  content: '✦  ✦  ✦';
+  display: block;
+  font-size: 0.75rem;
+  color: #7a5c2e;
+  letter-spacing: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+header::after { margin-bottom: 0; margin-top: 0.3rem; display: none; }
+
+/* ── Page title ─────────────────────────────────────────
+   Uses the blackletter font for a historical manuscript
+   feel. The <span> inside (the date range) switches to
+   a smaller italic serif and sits on its own line.
+─────────────────────────────────────────────────────── */
+header h1 {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(1.4rem, 4vw, 2.6rem);
+  font-weight: 400;
+  color: #3b1f00;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.18);
+  margin-bottom: 0.9rem;
+  line-height: 1.2;
+}
+
+header h1 span {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: clamp(0.8rem, 2vw, 1.3rem);
+  font-style: italic;
+  color: #6b3f00;
+  display: block;
+  letter-spacing: 3px;
+}
+
+/* ── Header controls wrapper ────────────────────────────
+   Stacks the filter buttons and zoom controls vertically,
+   both centred horizontally.
+─────────────────────────────────────────────────────── */
+.header-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/* ── Filter buttons row ─────────────────────────────────
+   Flexbox row that wraps on small screens.
+   Each button targets a region via data-region in app.js.
+─────────────────────────────────────────────────────── */
+.filter-dropdowns {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 1px;
+}
+
+.dropdown-toggle {
+  padding: clamp(0.2rem, 0.5vw, 0.3rem) clamp(0.5rem, 1.5vw, 1rem);
+  border: 1px solid #7a5c2e;
+  background: #f0e2b8;
+  color: #3b1f00;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  font-style: italic;
+  cursor: pointer;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  transition: background 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.dropdown-toggle:hover { background: #c8a96e; }
+
+.filters {
+  display: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.filters.open { display: flex; }
+
+/* Base style for all filter buttons —
+   square corners and serif italic font keep the
+   historical document look. */
+.filter-btn {
+  padding: clamp(0.2rem, 0.4vw, 0.3rem) clamp(0.4rem, 1.2vw, 0.9rem);
+  border: 1px solid #7a5c2e;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+  font-style: italic;
+  background: #f0e2b8;
+  color: #3b1f00;
+  transition: all 0.2s;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  letter-spacing: 0.3px;
+}
+
+/* Each region button gets a unique border colour
+   matching its region tag colour used on the cards. */
+.filter-btn[data-region="all"]            { border-color: #555; }
+.filter-btn[data-region="north-america"]  { border-color: #2a6080; }
+.filter-btn[data-region="europe"]         { border-color: #6b3080; }
+.filter-btn[data-region="asia"]           { border-color: #802020; }
+.filter-btn[data-region="south-america"]  { border-color: #2a6030; }
+.filter-btn[data-region="africa"]         { border-color: #806020; }
+
+/* Active/hover state — darkens the parchment background */
+.filter-btn.active,
+.filter-btn:hover {
+  background: #c8a96e;
+  color: #1a0a00;
+}
+
+/* Base style shared by all event-type filter buttons */
+.filter-type-btn {
+  padding: clamp(0.2rem, 0.4vw, 0.3rem) clamp(0.4rem, 1.2vw, 0.9rem);
+  border: 1px solid;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+  font-style: italic;
+  background: #f0e2b8;
+  color: #3b1f00;
+  transition: all 0.2s;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  letter-spacing: 0.3px;
+}
+
+/* Per-type colours — only the border colour is unique */
+.filter-type-btn[data-type="all"]          { border-color: #555; }
+.filter-type-btn[data-type="war"]          { border-color: #8b1a1a; }
+.filter-type-btn[data-type="politics"]     { border-color: #1a3a6b; }
+.filter-type-btn[data-type="exploration"]  { border-color: #1a5a4a; }
+.filter-type-btn[data-type="social"]       { border-color: #5a4a00; }
+.filter-type-btn[data-type="economy"]      { border-color: #2a4a10; }
+.filter-type-btn[data-type="revolution"]   { border-color: #7a2a00; }
+.filter-type-btn[data-type="science"]      { border-color: #1a1a6b; }
+.filter-type-btn[data-type="culture"]      { border-color: #6b1a40; }
+.filter-type-btn[data-type="trade"]        { border-color: #6b4000; }
+.filter-type-btn[data-type="religion"]     { border-color: #3a1a6b; }
+.filter-type-btn[data-type="indigenous"]   { border-color: #1a4a4a; }
+.filter-type-btn[data-type="colonisation"] { border-color: #4a2a1a; }
+.filter-type-btn[data-type="treaty"]       { border-color: #A30000; }
+.filter-type-btn[data-type="miscellaneous"] { border-color: #3b3b3b; }
+
+/* Active/hover — match the region button style */
+.filter-type-btn.active,
+.filter-type-btn:hover { background: #c8a96e; color: #1a0a00; }
+
+/* ── Zoom controls ──────────────────────────────────────
+   Small row of − label + buttons.
+   app.js adds zoom-sm / zoom-md / zoom-lg to <main>
+   which changes the base font-size, scaling all em-based
+   sizes on the cards proportionally.
+─────────────────────────────────────────────────────── */
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zoom-btn {
+  width: 1.8rem; height: 1.8rem;
+  border: 1px solid #7a5c2e;
+  background: #f0e2b8;
+  color: #3b1f00;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: Georgia, serif;
+  transition: background 0.2s;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.zoom-btn:hover { background: #c8a96e; }
+
+.zoom-pips {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+}
+
+.zoom-pip {
+  color: #b8924a;
+  opacity: 0.35;
+  transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease, font-size 0.3s ease;
+}
+
+.zoom-pip.active {
+  color: #7a5c2e;
+  opacity: 1;
+}
+
+.zoom-pip[data-zoom="0"] { font-size: 0.7rem; }
+.zoom-pip[data-zoom="1"] { font-size: 0.7rem; }
+.zoom-pip[data-zoom="2"] { font-size: 0.7rem; }
+.zoom-pip[data-zoom="3"] { font-size: 0.7rem; }
+.zoom-pip[data-zoom="4"] { font-size: 0.7rem; }
+
+.zoom-pip.active[data-zoom="0"] { animation: pipShrink 0.4s ease; }
+.zoom-pip.active[data-zoom="1"] { animation: pipShrink 0.4s ease; }
+.zoom-pip.active[data-zoom="2"] { animation: pipPop    0.4s ease; }
+.zoom-pip.active[data-zoom="3"] { animation: pipGrow   0.4s ease; }
+.zoom-pip.active[data-zoom="4"] { animation: pipGrow   0.4s ease; }
+
+@keyframes pipShrink {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(0.3); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pipPop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pipGrow {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(2.6); }
+  100% { transform: scale(1); }
+}
+
+#zoom-level {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: #6b4a1a;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+/* ── Main content area ──────────────────────────────────
+   Padding gives breathing room around the timeline.
+   font-size transition makes zoom feel smooth.
+─────────────────────────────────────────────────────── */
+main {
+  padding: clamp(1.5rem, 3vw, 3rem) clamp(0.5rem, 2vw, 1rem) clamp(3rem, 6vw, 6rem);
+  transition: font-size 0.2s;
+}
+
+/* Zoom level classes — applied to <main> by app.js.
+   All card sizes use em units so they scale with this. */
+.zoom-xs { font-size: 0.6rem;  }
+.zoom-sm { font-size: 0.78rem; }
+.zoom-md { font-size: 1rem;    }
+.zoom-lg { font-size: 1.22rem; }
+.zoom-xl { font-size: 1.5rem;  }
+
+/* ── Timeline container ─────────────────────────────────
+   position: relative is required so the ::before
+   pseudo-element (the vertical spine line) can be
+   positioned absolutely inside it.
+─────────────────────────────────────────────────────── */
+.timeline {
+  position: relative;
+  width: 98vw;
+  max-width: 98vw;
+  margin: 0 auto;
+}
+
+/* The vertical centre spine line.
+   Uses a repeating gradient to look like a dashed
+   ink ruling rather than a solid modern line. */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 3px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #7a5c2e 0px, #7a5c2e 8px,
+    #c8a96e 8px, #c8a96e 14px
+  );
+  transform: translateX(-50%);
+  opacity: 0.6;
+}
+
+/* ── Individual event row ───────────────────────────────
+   Odd events sit on the LEFT side of the spine.
+   padding-right pushes the card away from the centre.
+   position: relative lets the ::after wax seal dot
+   be placed on the spine.
+─────────────────────────────────────────────────────── */
+.event {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: calc(50% + 1.2rem);
+  margin-bottom: 2rem;
+  position: relative;
+  animation: fadeIn 0.35s ease;
+  transition: transform 0.2s ease;
+}
+
+.event:hover {
+  transform: scale(1.015);
+  z-index: 1;
+}
+
+.event:nth-child(even) {
+  justify-content: flex-start;
+  padding-right: 0;
+  padding-left: calc(50% + 1.2rem);
+}
+
+/* Wax seal marker on the spine for each event.
+   ✦ glyph in deep red mimics a wax seal impression. */
+.event::after {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 0.9rem;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  color: #8b1a1a;
+  text-shadow: 0 0 4px rgba(139,26,26,0.5);
+  line-height: 1;
+}
+
+/* ── Card ───────────────────────────────────────────────
+   The parchment card for each event.
+   SVG noise texture + warm background colour mimics
+   aged paper. Square corners, ink-brown border, and
+   a thicker top rule give a document/ledger feel.
+   inset box-shadow adds a subtle inner glow.
+─────────────────────────────────────────────────────── */
+.card {
+  background: #f5e9c8;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  border: 1px solid #b8924a;
+  border-top: 3px solid #7a5c2e;
+  border-radius: 0;
+  padding: clamp(0.6em, 1.5vw, 1em) clamp(0.8em, 2vw, 1.3em) clamp(0.6em, 1.2vw, 1.1em);
+  max-width: calc(50vw - 2rem);
+  width: 100%;
+  box-shadow: 3px 4px 14px rgba(0,0,0,0.35), inset 0 0 40px rgba(180,140,60,0.08);
+  position: relative;
+}
+
+/* Reinforces the top border line on hover */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 0; right: 0;
+  height: 3px;
+  background: #7a5c2e;
+}
+
+/* Hover — deepens the shadow to lift the card slightly */
+.card:hover {
+  box-shadow: 4px 5px 20px rgba(0,0,0,0.45), inset 0 0 40px rgba(180,140,60,0.12);
+}
+
+/* ── Card year ──────────────────────────────────────────
+   Uses the blackletter font in deep red — like a
+   hand-written date at the top of a journal entry.
+─────────────────────────────────────────────────────── */
+.card-year {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 1.1em;
+  color: #8b1a1a;
+  letter-spacing: 1px;
+  margin-bottom: 0.25em;
+}
+
+/* ── Card title ─────────────────────────────────────────
+   Bold serif heading for the event name.
+   The bottom border acts as a ruled underline
+   separating the title from the description.
+─────────────────────────────────────────────────────── */
+.card-title {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 1em;
+  font-weight: 700;
+  color: #1a0a00;
+  margin-bottom: 0.45em;
+  border-bottom: 1px solid #c8a96e;
+  padding-bottom: 0.3em;
+}
+
+/* ── Card description ───────────────────────────────────
+   Italic body text in dark brown — mimics handwritten
+   or typeset ink on parchment.
+─────────────────────────────────────────────────────── */
+.card-desc {
+  font-size: 0.85em;
+  color: #3b2200;
+  line-height: 1.65;
+  font-style: italic;
+}
+
+/* ── Tags container ─────────────────────────────────────
+   Flex row that wraps if both tags don't fit on one line.
+─────────────────────────────────────────────────────── */
+.tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.7em; }
+
+/* Base tag style — square bordered label.
+   No rounded corners or glowing colours; uses muted
+   ink-wash tones to stay period-appropriate. */
+.tag {
+  display: inline-block;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.68em;
+  font-style: normal;
+  font-weight: 700;
+  padding: 0.1em 0.55em;
+  border: 1px solid currentColor; /* Border matches the text colour */
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-radius: 0;
+}
+
+/* ── Region tags ────────────────────────────────────────
+   One muted ink-wash colour per region.
+   These match the border colours on the filter buttons.
+─────────────────────────────────────────────────────── */
+.tag-north-america  { color: #1a5070; background: #d6eaf5; border-color: #1a5070; }
+.tag-europe         { color: #4a1060; background: #ead6f5; border-color: #4a1060; }
+.tag-asia           { color: #701010; background: #f5d6d6; border-color: #701010; }
+.tag-south-america  { color: #1a5020; background: #d6f5da; border-color: #1a5020; }
+.tag-africa         { color: #705010; background: #f5ead6; border-color: #705010; }
+.tag-oceania		{ color: #FFF394; background: #0F4596; border-color: #7A7CCF; }
+
+/* ── Event type tags ────────────────────────────────────
+   One distinct muted colour per event type.
+   To add a new type: add a new line here following the
+   same pattern, then add the type key to typeLabels
+   in app.js and use it in the events array.
+─────────────────────────────────────────────────────── */
+.tag-type-war          { color: #8b1a1a; background: #f5dada; border-color: #8b1a1a; }
+.tag-type-politics     { color: #1a3a6b; background: #dae4f5; border-color: #1a3a6b; }
+.tag-type-exploration  { color: #1a5a4a; background: #d6f0eb; border-color: #1a5a4a; }
+.tag-type-social       { color: #5a4a00; background: #f5f0d0; border-color: #5a4a00; }
+.tag-type-economy      { color: #2a4a10; background: #dff0d0; border-color: #2a4a10; }
+.tag-type-revolution   { color: #7a2a00; background: #f5e0d0; border-color: #7a2a00; }
+.tag-type-science      { color: #1a1a6b; background: #dcdcf5; border-color: #1a1a6b; }
+.tag-type-culture      { color: #6b1a40; background: #f5d6e4; border-color: #6b1a40; }
+.tag-type-trade        { color: #6b4000; background: #f5e8d0; border-color: #6b4000; }
+.tag-type-religion     { color: #3a1a6b; background: #e4d6f5; border-color: #3a1a6b; }
+.tag-type-indigenous   { color: #1a4a4a; background: #d6f0f0; border-color: #1a4a4a; }
+.tag-type-colonisation { color: #4a2a1a; background: #ede0d8; border-color: #4a2a1a; }
+.tag-type-treaty        { color: #E5FEFF; background: #A30000; border-color: #1B2900; }
+.tag-type-miscellaneous { color: #3b3b3b; background: #e0e0d8; border-color: #3b3b3b; }
+
+/* Hidden class — toggled by app.js when a region filter
+   is active. Hides events that don't match the filter. */
+.event.hidden { display: none; }
+
+/* Fade-in animation played each time cards are rendered */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive — small screens ────────────────────────
+   On screens narrower than 600px the two-column
+   left/right layout collapses to a single left-aligned
+   column. The spine and dots move to the far left.
+─────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .timeline::before { left: 1rem; }
+  .event, .event:nth-child(even) {
+    justify-content: flex-start;
+    padding-left: 3rem;
+    padding-right: 0;
+  }
+  .event::after { left: 1rem; }
+  .card { max-width: 100%; }
+}
+
+@media (max-width: 400px) {
+  header h1 { font-size: 1.2rem; }
+  .dropdown-toggle, .filter-btn, .filter-type-btn { font-size: 0.6rem; }
+}

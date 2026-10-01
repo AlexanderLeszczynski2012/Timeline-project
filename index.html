@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Historical Timeline 1700–1900</title>
+
+  <!-- Main stylesheet — controls all visual styling -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+       Sticky banner at the top of the page.
+       Contains the page title, region filter
+       buttons, and the zoom in/out controls.
+  ════════════════════════════════════════════ -->
+  <header>
+    <!-- Page title — styled in blackletter font via CSS -->
+    <h1>Historical Timeline  <span>1700 – 1900</span></h1>
+    <h2>By Kaide Li and Alexander Leszczynski</h2>
+
+    <!-- Wrapper that stacks the filters and zoom controls vertically -->
+    <div class="header-controls">
+
+      <!-- ── Region filter buttons ──────────────────
+           Each button has a data-region attribute.
+           app.js reads this value to know which
+           region to filter the timeline by.
+           "all" shows every event regardless of region.
+      ─────────────────────────────────────────── -->
+      <div class="filter-dropown">
+      <div class="filter-group">
+        <button class="dropdown-toggle" id="location-toggle">Sort by Location ▾</button>
+        <div class="filters" id="location-filters">
+          <button class="filter-btn active" data-region="all">All</button>
+          <button class="filter-btn" data-region="north-america">North America</button>
+          <button class="filter-btn" data-region="europe">Europe</button>
+          <button class="filter-btn" data-region="asia">Asia</button>
+          <button class="filter-btn" data-region="south-america">South America</button>
+          <button class="filter-btn" data-region="africa">Africa</button>
+          <button class="filter-btn" data-region="oceania">Oceania</button>
+        </div>
+      </div>
+		<p><br></p>
+      <div class="filter-group">
+        <button class="dropdown-toggle" id="type-toggle">Sort by Event Type ▾</button>
+        <div class="filters" id="type-filters">
+          <button class="filter-type-btn active" data-type="all">All</button>
+          <button class="filter-type-btn" data-type="war">War</button>
+          <button class="filter-type-btn" data-type="politics">Politics</button>
+          <button class="filter-type-btn" data-type="exploration">Exploration</button>
+          <button class="filter-type-btn" data-type="economy">Economy</button>
+          <button class="filter-type-btn" data-type="revolution">Revolution</button>
+          <button class="filter-type-btn" data-type="science">Science</button>
+          <button class="filter-type-btn" data-type="culture">Culture</button>
+          <button class="filter-type-btn" data-type="trade">Trade</button>
+          <button class="filter-type-btn" data-type="religion">Religion</button>
+          <button class="filter-type-btn" data-type="indigenous">Indigenous</button>
+          <button class="filter-type-btn" data-type="colonisation">Colonisation</button>
+          <button class="filter-type-btn" data-type="treaty">Treaty</button>
+        </div>
+      </div>
+      </div>
+
+      <!-- ── Zoom controls ──────────────────────────
+           − button  → shrinks text (zoom out)
+           + button  → enlarges text (zoom in)
+           #zoom-level → label showing current size
+           app.js handles the click logic and applies
+           a zoom class (zoom-sm / zoom-md / zoom-lg)
+           to the <main> element.
+      ─────────────────────────────────────────── -->
+      <div class="zoom-controls">
+        <button class="zoom-btn" id="zoom-out">−</button>
+        <span id="zoom-level">Normal</span>
+        <button class="zoom-btn" id="zoom-in">+</button>
+      </div>
+      <div class="zoom-pips">
+        <span class="zoom-pip" data-zoom="0">✦</span>
+        <span class="zoom-pip" data-zoom="1">✦</span>
+        <span class="zoom-pip active" data-zoom="2">✦</span>
+        <span class="zoom-pip" data-zoom="3">✦</span>
+        <span class="zoom-pip" data-zoom="4">✦</span>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT
+       The #timeline div is empty on page load.
+       app.js fills it with event cards at runtime
+       by reading the events array and building HTML.
+  ════════════════════════════════════════════ -->
+  <main>
+    <div class="timeline" id="timeline"></div>
+  </main>
+
+  <!-- app.js is loaded at the bottom so the DOM
+       elements above are available when the script runs -->
+  <script src="app.js"></script>
+
+</body>
+</html>
