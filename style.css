@@ -48,6 +48,7 @@ header {
   top: 0;
   z-index: 100;
   will-change: transform, opacity;
+  position: relative;
 }
 
 /* Decorative ornament lines above and below the title.
@@ -250,6 +251,7 @@ header h1 span {
   color: #b8924a;
   opacity: 0.35;
   transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease, font-size 0.3s ease;
+  pointer-events: none;
 }
 
 .zoom-pip.active {
@@ -349,11 +351,9 @@ main {
    be placed on the spine.
 ─────────────────────────────────────────────────────── */
 .event {
-  display: flex;
-  justify-content: flex-end;
-  padding-right: calc(50% + 1.2rem);
-  margin-bottom: 2rem;
-  position: relative;
+  position: absolute;
+  width: calc(50% - 1.2rem);
+  right: calc(50% + 1.2rem);
   animation: fadeIn 0.35s ease;
   transition: transform 0.2s ease;
 }
@@ -363,33 +363,27 @@ main {
   z-index: 1;
 }
 
-.event:nth-child(even) {
-  justify-content: flex-start;
-  padding-right: 0;
-  padding-left: calc(50% + 1.2rem);
+.event-right {
+  right: auto;
+  left: calc(50% + 1.2rem);
 }
 
-/* Wax seal marker on the spine for each event.
-   ✦ glyph in deep red mimics a wax seal impression. */
 .event::after {
   content: '✦';
   position: absolute;
-  left: 50%;
+  right: -1.45rem;
   top: 0.9rem;
-  transform: translateX(-50%);
   font-size: 1rem;
   color: #8b1a1a;
   text-shadow: 0 0 4px rgba(139,26,26,0.5);
   line-height: 1;
 }
 
-/* ── Card ───────────────────────────────────────────────
-   The parchment card for each event.
-   SVG noise texture + warm background colour mimics
-   aged paper. Square corners, ink-brown border, and
-   a thicker top rule give a document/ledger feel.
-   inset box-shadow adds a subtle inner glow.
-─────────────────────────────────────────────────────── */
+.event-right::after {
+  right: auto;
+  left: -1.45rem;
+}
+
 .card {
   background: #f5e9c8;
   background-image:
@@ -398,7 +392,7 @@ main {
   border-top: 3px solid #7a5c2e;
   border-radius: 0;
   padding: clamp(0.6em, 1.5vw, 1em) clamp(0.8em, 2vw, 1.3em) clamp(0.6em, 1.2vw, 1.1em);
-  max-width: calc(50vw - 2rem);
+  max-width: 100%;
   width: 100%;
   box-shadow: 3px 4px 14px rgba(0,0,0,0.35), inset 0 0 40px rgba(180,140,60,0.08);
   position: relative;
@@ -513,6 +507,117 @@ main {
    is active. Hides events that don't match the filter. */
 .event.hidden { display: none; }
 
+#event-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  text-align: center;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #c8b48a;
+  letter-spacing: 0.5px;
+  margin-bottom: 2rem;
+}
+
+#event-count::before,
+#event-count::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #8a6a3a);
+}
+
+#event-count::after {
+  background: linear-gradient(to left, transparent, #8a6a3a);
+}
+
+#year-search {
+  position: absolute;
+  top: 50%;
+  left: 1.2rem;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+#year-search input {
+  width: 4.2rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid #7a5c2e;
+  background: #f0e2b8;
+  color: #3b1f00;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  outline: none;
+  text-align: center;
+}
+
+#year-search input:focus {
+  background: #e8d0a0;
+  border-color: #5a3a10;
+}
+
+#year-search input::placeholder {
+  color: #a07840;
+  opacity: 1;
+}
+
+/* hide number spinners */
+#year-search input::-webkit-outer-spin-button,
+#year-search input::-webkit-inner-spin-button { -webkit-appearance: none; }
+#year-search input[type=number] { -moz-appearance: textfield; }
+
+#year-search-sep {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.8rem;
+  color: #7a5c2e;
+}
+
+#no-results {
+  display: none;
+  text-align: center;
+  padding: 5rem 1rem 4rem;
+}
+
+#no-results-inner {
+  display: inline-block;
+  border: 1px solid #c8a96e;
+  border-top: 3px solid #7a5c2e;
+  background: #f5e9c8;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  box-shadow: 3px 4px 14px rgba(0,0,0,0.35), inset 0 0 40px rgba(180,140,60,0.08);
+  padding: 2.2rem 3.5rem 2rem;
+  max-width: 420px;
+}
+
+#no-results-ornament {
+  font-size: 0.7rem;
+  color: #b8924a;
+  letter-spacing: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+#no-results-title {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3b1f00;
+  margin-bottom: 0.5rem;
+}
+
+#no-results-sub {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: #7a5c2e;
+}
+
 /* Fade-in animation played each time cards are rendered */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
@@ -526,12 +631,13 @@ main {
 ─────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .timeline::before { left: 1rem; }
-  .event, .event:nth-child(even) {
-    justify-content: flex-start;
-    padding-left: 3rem;
-    padding-right: 0;
+  .event, .event-right {
+    position: absolute;
+    width: calc(100% - 3rem);
+    left: 3rem;
+    right: 0;
   }
-  .event::after { left: 1rem; }
+  .event::after, .event-right::after { left: -1.45rem; right: auto; }
   .card { max-width: 100%; }
 }
 

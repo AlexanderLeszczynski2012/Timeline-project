@@ -21,7 +21,6 @@
 //  so you can add them in any order here.
 // ═══════════════════════════════════════════════════════
 const events = [
-  { year: 1602, title: "Founding of the Dutch East India Company ", desc: "The Dutch East India company is known as the largest company ever in the history of the world. The company has an estimated value of 8 trillion USD in today's money (or about 11 trillion CAD). ", region: "europe",        eventType: "exploration"         },
   { year: 1700, title: "Start of the Great Northern War ", desc: "The Great Northern War was a major European conflict where a coalition led by Russia, Denmark-Norway, and Saxony-Poland successfully challenged and ended the supremacy of the Swedish Empire in the Baltic region ", region: "europe",          eventType: "war"       },
   { year: 1708, title: "British East India Company Merges", desc: "British East India Company & a rival company merge into the United Company of Merchants of England and continue trade throughout the Indies and East Asia. With a private army twice the size of the National British army, the company owned most of India, parts of South Asia, and Hong Kong. The company's massive influence and decisions directly lead to major events, like the Opium Wars, the Boston Tea Party, the Bengali Famine, and the Indian Rebellion. ", region: "europe", eventType: "trade" },
   { year: 1718, title: "Treaty of Passorowitz", desc: "Austria successfully pushed the Ottomans south, taking over northern Serbia, Banat, and little Walachia. ", region: "europe",        eventType: "treaty"       },
@@ -170,17 +169,35 @@ document.getElementById("zoom-out").addEventListener("click", () => {
 //  filter — the region string to show, or "all" to show
 //           every event. Defaults to "all".
 // ═══════════════════════════════════════════════════════
-function render(filter = "all", typeFilter = "all") {
+function render(filter = "all", typeFilter = "all", yearFrom = null, yearTo = null) {
   const container = document.getElementById("timeline");
-  const sorted = [...events].sort((a, b) => a.year - b.year);
-  container.innerHTML = sorted.map(e => {
-    const hidden = (filter !== "all" && e.region !== filter) || (typeFilter !== "all" && e.eventType !== typeFilter) ? " hidden" : "";
+  const sorted = [...events].sort((a, b) => a.year - b.year || a.title.localeCompare(b.title));
 
-    // Template literal builds the card HTML for one event.
-    // tag-${e.region} and tag-type-${e.eventType} map to
-    // the colour rules in style.css.
-    return `
-    <div class="event${hidden}">
+  const visible = sorted.filter(e =>
+    (filter === "all" || e.region === filter) &&
+    (typeFilter === "all" || e.eventType === typeFilter) &&
+    (yearFrom === null || e.year >= yearFrom) &&
+    (yearTo === null || e.year <= yearTo)
+  );
+
+  document.getElementById("no-results").style.display = visible.length === 0 ? "block" : "none";
+  if (visible.length === 0) { container.innerHTML = ""; container.style.height = "0"; return; }
+
+  const sideMap = new Map();
+  visible.forEach((e, i) => sideMap.set(e, i % 2 === 0 ? "left" : "right"));
+
+  const items = sorted.map(e => {
+    const isHidden =
+      (filter !== "all" && e.region !== filter) ||
+      (typeFilter !== "all" && e.eventType !== typeFilter) ||
+      (yearFrom !== null && e.year < yearFrom) ||
+      (yearTo !== null && e.year > yearTo);
+    const side = sideMap.get(e) ?? (sorted.indexOf(e) % 2 === 0 ? "left" : "right");
+    return { e, isHidden, side };
+  });
+
+  container.innerHTML = items.map(({ e, isHidden, side }) => `
+    <div class="event event-${side}${isHidden ? " hidden" : ""}" style="top:0px">
       <div class="card">
         <div class="card-year">${e.year}</div>
         <div class="card-title">${e.title}</div>
@@ -190,8 +207,28 @@ function render(filter = "all", typeFilter = "all") {
           <span class="tag tag-type tag-type-${e.eventType}">${typeLabels[e.eventType]}</span>
         </div>
       </div>
-    </div>`;
-  }).join(""); // join("") removes the commas between array items
+    </div>`
+  ).join("");
+
+  const nodes = Array.from(container.querySelectorAll(".event:not(.hidden)"));
+  const byLeft  = nodes.filter(n => n.classList.contains("event-left"));
+  const byRight = nodes.filter(n => n.classList.contains("event-right"));
+
+  const zoomGaps = [80, 120, 160, 220, 300];
+  const GAP = zoomGaps[zoomIndex];
+  [byLeft, byRight].forEach(group => {
+    let floor = 0;
+    group.forEach(node => {
+      node.style.top = floor + "px";
+      floor += node.offsetHeight + GAP;
+    });
+  });
+
+  let maxBottom = 0;
+  container.querySelectorAll(".event:not(.hidden)").forEach(n => {
+    maxBottom = Math.max(maxBottom, parseFloat(n.style.top) + n.offsetHeight);
+  });
+  container.style.height = (maxBottom + 60) + "px";
 }
 
 // ═══════════════════════════════════════════════════════
@@ -219,7 +256,7 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
     activeFilter = btn.dataset.region;
     document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    render(activeFilter, activeType);
+    rerender();
   });
 });
 
@@ -228,9 +265,23 @@ document.querySelectorAll(".filter-type-btn").forEach(btn => {
     activeType = btn.dataset.type;
     document.querySelectorAll(".filter-type-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    render(activeFilter, activeType);
+    rerender();
   });
 });
+
+function getYearInputs() {
+  const from = parseInt(document.getElementById("year-from").value) || null;
+  const to   = parseInt(document.getElementById("year-to").value)   || null;
+  return { from, to };
+}
+
+function rerender() {
+  const { from, to } = getYearInputs();
+  render(activeFilter, activeType, from, to);
+}
+
+document.getElementById("year-from").addEventListener("input", rerender);
+document.getElementById("year-to").addEventListener("input", rerender);
 
 // ── Initial page load ────────────────────────────────
 // Render all events and apply the default zoom level

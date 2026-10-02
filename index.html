@@ -17,6 +17,12 @@
        buttons, and the zoom in/out controls.
   ════════════════════════════════════════════ -->
   <header>
+    <div id="year-search">
+      <input type="number" id="year-from" placeholder="From" min="1600" max="1900" />
+      <span id="year-search-sep">–</span>
+      <input type="number" id="year-to" placeholder="To" min="1600" max="1900" />
+    </div>
+
     <!-- Page title — styled in blackletter font via CSS -->
     <h1>Historical Timeline  <span>1700 – 1900</span></h1>
 
@@ -95,6 +101,13 @@
   ════════════════════════════════════════════ -->
   <main>
     <div class="timeline" id="timeline"></div>
+    <div id="no-results">
+      <div id="no-results-inner">
+        <div id="no-results-ornament">✦  ✦  ✦</div>
+        <div id="no-results-title">No Records Found</div>
+        <div id="no-results-sub">No events match the selected filters — try adjusting your selection.</div>
+      </div>
+    </div>
   </main>
 
   <!-- app.js is loaded at the bottom so the DOM
